@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/RendaControl.Api.props" />
-</Project>
