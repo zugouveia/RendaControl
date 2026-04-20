@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Node / frontend
+node_modules/
+.vercel/
+
+# .NET
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+
+# Local databases / secrets
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+!.env.example

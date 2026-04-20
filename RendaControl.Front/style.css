@@ -344,11 +344,19 @@ main {
 }
 .status-pago {
   display: block;
-  background: #d1fae5;
-  color: #065f46;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 5px 10px;
   border-radius: 20px;
   margin-top: 5px;
+}
+
+.status-pago--pago {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-pago--pendente {
+  background-color: #fee2e2;
+  color: #991b1b;
 }

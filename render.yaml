@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: rendacontrol-back
+    runtime: docker
+    rootDir: RendaControl.Back
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true

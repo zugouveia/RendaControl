@@ -1,0 +1,6 @@
+@RendaControl.Web_HostAddress = http://localhost:5130
+
+GET {{RendaControl.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -44,20 +44,20 @@
     <section class="resumo-grade">
       <div class="resumo-cartao">
         <p class="resumo-label">Total de Clientes</p>
-        <span class="resumo-valor">24</span>
-        <span class="resumo-detalhe">+3 este mês</span>
+        <span class="resumo-valor" id="resumo-total-clientes">0</span>
+        <span class="resumo-detalhe">Clientes cadastrados</span>
       </div>
 
       <div class="resumo-cartao">
         <p class="resumo-label">Clientes Ativos</p>
-        <span class="resumo-valor destaque-verde">18</span>
-        <span class="resumo-detalhe">75% da base</span>
+        <span class="resumo-valor destaque-verde" id="resumo-clientes-ativos">0</span>
+        <span class="resumo-detalhe" id="resumo-clientes-inadimplentes">0 inadimplentes</span>
       </div>
 
       <div class="resumo-cartao">
-        <p class="resumo-label">Receita Média</p>
-        <span class="resumo-valor">R$ 352</span>
-        <span class="resumo-detalhe">Por cliente / mês</span>
+        <p class="resumo-label">Clientes Novos</p>
+        <span class="resumo-valor" id="resumo-clientes-novos">0</span>
+        <span class="resumo-detalhe">Aguardando ativacao</span>
       </div>
     </section>
 
@@ -132,65 +132,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="linha-selecionada">
-                <td><strong>Ana Silva</strong></td>
-                <td>(21) 99999-0001</td>
-                <td>8</td>
-                <td>
-                  <select class="status-cliente ativo">
-                    <option value="novo">Novo</option>
-                    <option value="ativo" selected>Ativo</option>
-                    <option value="inadimplente">Inadimplente</option>
-                  </select>
-                </td>
-              </tr>
               <tr>
-                <td><strong>João Costa</strong></td>
-                <td>(21) 99999-0002</td>
-                <td>3</td>
-                <td>
-                  <select class="status-cliente ativo">
-                    <option value="novo">Novo</option>
-                    <option value="ativo" selected>Ativo</option>
-                    <option value="inadimplente">Inadimplente</option>
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Maria Lima</strong></td>
-                <td>(21) 99999-0003</td>
-                <td>5</td>
-                <td>
-                  <select class="status-cliente inadimplente">
-                    <option value="novo">Novo</option>
-                    <option value="ativo">Ativo</option>
-                    <option value="inadimplente" selected>Inadimplente</option>
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Pedro Alves</strong></td>
-                <td>(21) 99999-0004</td>
-                <td>1</td>
-                <td>
-                  <select class="status-cliente novo">
-                    <option value="novo" selected>Novo</option>
-                    <option value="ativo">Ativo</option>
-                    <option value="inadimplente">Inadimplente</option>
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Carla Souza</strong></td>
-                <td>(21) 99999-0005</td>
-                <td>12</td>
-                <td>
-                  <select class="status-cliente ativo">
-                    <option value="novo">Novo</option>
-                    <option value="ativo" selected>Ativo</option>
-                    <option value="inadimplente">Inadimplente</option>
-                  </select>
-                </td>
+                <td colspan="4">Carregando clientes...</td>
               </tr>
             </tbody>
           </table>
@@ -230,27 +173,16 @@
         </section>
 
         <section class="painel painel-historico">
-          <h2 class="painel-titulo">Histórico — Ana Silva</h2>
+          <h2 class="painel-titulo">Histórico — selecione um cliente</h2>
           <div class="historico-lista">
             <article class="historico-item">
               <div class="historico-info">
-                <h3>Design logo</h3>
-                <time>12/02/2026</time>
+                <h3>Sem historico ainda</h3>
+                <time>-</time>
               </div>
               <div class="historico-valores">
-                <strong>R$ 800</strong>
-                <span class="status-pago">Pago</span>
-              </div>
-            </article>
-
-            <article class="historico-item">
-              <div class="historico-info">
-                <h3>Banner redes</h3>
-                <time>05/01/2026</time>
-              </div>
-              <div class="historico-valores">
-                <strong>R$ 300</strong>
-                <span class="status-pago">Pago</span>
+                <strong>R$ 0</strong>
+                <span class="status-pago">-</span>
               </div>
             </article>
           </div>
