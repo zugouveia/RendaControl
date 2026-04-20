@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://localhost:5160/api";
+const SUPABASE_URL = window.APP_CONFIG?.SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = window.APP_CONFIG?.SUPABASE_PUBLISHABLE_KEY;
 
 const campoBusca = document.querySelector(".campo-busca");
 const tabelaBody = document.querySelector(".tabela-clientes tbody");
@@ -12,11 +13,23 @@ const clientesAtivosEl = document.querySelector("#resumo-clientes-ativos");
 const clientesInadimplentesEl = document.querySelector("#resumo-clientes-inadimplentes");
 const clientesNovosEl = document.querySelector("#resumo-clientes-novos");
 
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  alert("Configure SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY no arquivo config.js.");
+}
+
 let clienteSelecionadoId = null;
 let debounceId = null;
 
-async function fetchJson(url, options = {}) {
-  const response = await fetch(url, options);
+async function chamarSupabase(recurso, options = {}) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${recurso}`, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -27,7 +40,8 @@ async function fetchJson(url, options = {}) {
     return null;
   }
 
-  return response.json();
+  const texto = await response.text();
+  return texto ? JSON.parse(texto) : null;
 }
 
 function aplicarClasseSituacao(selectEl, situacao) {
@@ -41,6 +55,28 @@ function formatarMoeda(valor) {
 
 function formatarData(dataIso) {
   return new Intl.DateTimeFormat("pt-BR").format(new Date(dataIso));
+}
+
+function normalizarCliente(cliente) {
+  return {
+    id: cliente.id,
+    nome: cliente.nome,
+    telefone: cliente.telefone,
+    email: cliente.email,
+    endereco: cliente.endereco,
+    quantidadeServicos: cliente.quantidade_servicos ?? 0,
+    situacao: cliente.situacao ?? "novo",
+    dataCriacao: cliente.data_criacao,
+  };
+}
+
+function normalizarGasto(gasto) {
+  return {
+    id: gasto.id,
+    valor: Number(gasto.valor ?? 0),
+    dataVencimento: gasto.data_vencimento,
+    pago: Boolean(gasto.pago),
+  };
 }
 
 function renderizarHistorico(gastos) {
@@ -115,16 +151,29 @@ function renderizarClientes(clientes) {
 }
 
 async function carregarResumo() {
-  const resumo = await fetchJson(`${API_BASE_URL}/clientes/resumo`);
-  totalClientesEl.textContent = resumo.totalClientes;
-  clientesAtivosEl.textContent = resumo.clientesAtivos;
-  clientesInadimplentesEl.textContent = `${resumo.clientesInadimplentes} inadimplentes`;
-  clientesNovosEl.textContent = resumo.clientesNovos;
+  const clientes = await chamarSupabase("clientes?select=situacao");
+  const totalClientes = clientes.length;
+  const clientesAtivos = clientes.filter((cliente) => cliente.situacao === "ativo").length;
+  const clientesInadimplentes = clientes.filter((cliente) => cliente.situacao === "inadimplente").length;
+  const clientesNovos = clientes.filter((cliente) => cliente.situacao === "novo").length;
+
+  totalClientesEl.textContent = totalClientes;
+  clientesAtivosEl.textContent = clientesAtivos;
+  clientesInadimplentesEl.textContent = `${clientesInadimplentes} inadimplentes`;
+  clientesNovosEl.textContent = clientesNovos;
 }
 
 async function carregarClientes(busca = "") {
-  const query = busca ? `?busca=${encodeURIComponent(busca)}` : "";
-  const clientes = await fetchJson(`${API_BASE_URL}/clientes${query}`);
+  const parametros = new URLSearchParams();
+  parametros.set("select", "id,nome,telefone,email,endereco,quantidade_servicos,situacao,data_criacao");
+  parametros.set("order", "nome.asc");
+
+  if (busca) {
+    parametros.set("nome", `ilike.*${busca}*`);
+  }
+
+  const respostaClientes = await chamarSupabase(`clientes?${parametros.toString()}`);
+  const clientes = (respostaClientes || []).map(normalizarCliente);
 
   if (clienteSelecionadoId && !clientes.some((cliente) => cliente.id === clienteSelecionadoId)) {
     clienteSelecionadoId = null;
@@ -143,7 +192,12 @@ async function carregarClientes(busca = "") {
 }
 
 async function carregarGastosDoCliente(clienteId) {
-  const gastos = await fetchJson(`${API_BASE_URL}/clientes/${clienteId}/gastos`);
+  const parametros = new URLSearchParams();
+  parametros.set("select", "id,valor,data_vencimento,pago");
+  parametros.set("cliente_id", `eq.${clienteId}`);
+  parametros.set("order", "data_vencimento.desc");
+  const respostaGastos = await chamarSupabase(`gastos?${parametros.toString()}`);
+  const gastos = (respostaGastos || []).map(normalizarGasto);
   renderizarHistorico(gastos);
 }
 
@@ -185,9 +239,9 @@ tabelaBody.addEventListener("change", async (event) => {
   aplicarClasseSituacao(select, situacao);
 
   try {
-    await fetchJson(`${API_BASE_URL}/clientes/${clienteId}/situacao`, {
+    await chamarSupabase(`clientes?id=eq.${clienteId}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { Prefer: "return=representation" },
       body: JSON.stringify({ situacao }),
     });
     await carregarResumo();
@@ -212,10 +266,13 @@ formulario.addEventListener("submit", async (event) => {
   };
 
   try {
-    await fetchJson(`${API_BASE_URL}/clientes`, {
+    await chamarSupabase("clientes", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify({
+        ...payload,
+        situacao: "novo",
+      }),
     });
 
     formulario.reset();

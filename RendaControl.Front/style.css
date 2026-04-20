@@ -216,6 +216,10 @@ main {
   background: #f4faf5;
 }
 
+.tabela-clientes tbody tr td strong {
+  cursor: pointer;
+}
+
 .linha-selecionada {
   background-color: #f4faf5;
 }
@@ -359,4 +363,103 @@ main {
 .status-pago--pendente {
   background-color: #fee2e2;
   color: #991b1b;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-conteudo {
+    grid-template-columns: 1fr;
+  }
+
+  .resumo-grade {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content,
+  main {
+    padding: 0 16px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-esquerda {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navegacao ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+  }
+
+  .navegacao a {
+    display: inline-block;
+    font-size: 0.8rem;
+  }
+
+  .header-direita {
+    width: 100%;
+  }
+
+  .botao-logout {
+    width: 100%;
+  }
+
+  .resumo-grade {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .painel {
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .painel-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .campo-busca {
+    width: 100%;
+  }
+
+  .form-cadastro {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-cheio,
+  .form-botoes {
+    grid-column: span 1;
+  }
+
+  .form-botoes {
+    flex-direction: column;
+  }
+
+  .btn-salvar,
+  .btn-cancelar {
+    width: 100%;
+  }
+
+  .tabela-clientes th,
+  .tabela-clientes td {
+    padding: 10px 8px;
+    font-size: 0.8rem;
+  }
+
+  .status-cliente {
+    width: 100%;
+    min-width: 105px;
+  }
 }

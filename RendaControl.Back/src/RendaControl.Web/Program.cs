@@ -5,6 +5,13 @@ using RendaControl.Web.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ??
+    [
+        "http://localhost:5500",
+        "https://rendacontrol-front.vercel.app"
+    ];
+var resetDatabaseOnStartup = builder.Configuration.GetValue<bool>("Startup:ResetDatabaseOnStartup");
+var seedMockDataOnStartup = builder.Configuration.GetValue<bool>("Startup:SeedMockDataOnStartup");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -17,9 +24,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(FrontendCorsPolicy, policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:5500",
-                "https://rendacontrol-front.vercel.app")
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -43,13 +48,16 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    if (app.Environment.IsDevelopment())
+    if (resetDatabaseOnStartup)
     {
         dbContext.Database.EnsureDeleted();
     }
 
     dbContext.Database.EnsureCreated();
-    await MockDataSeeder.SemearTudoAsync(dbContext);
+    if (seedMockDataOnStartup)
+    {
+        await MockDataSeeder.SemearTudoAsync(dbContext);
+    }
 }
 
 app.Run();
