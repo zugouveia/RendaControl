@@ -66,7 +66,7 @@ btnCancelar.addEventListener("click", () => {
 });
 
 //Salvar
-formulario.addEventListener("submit", (evento) => {
+formulario.addEventListener("submit", async (evento) => {
   evento.preventDefault();
 
   const novoCliente = {
@@ -80,10 +80,32 @@ formulario.addEventListener("submit", (evento) => {
     status: "Novo",
   };
 
-  // Teste
-  console.log("Dados:");
-  console.table(novoCliente);
-  alert(`Cliente ${novoCliente.nome} cadastrado com sucesso!`);
+  // Integracao com backend
+  const urlApi = "https://localhost:7028/api/Clientes";
 
-  formulario.reset();
+  try {
+    const resposta = await fetch(urlApi, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(novoCliente),
+    });
+
+    if (resposta.ok) {
+      const clienteCadastrado = await resposta.json();
+
+      console.log("Servidor respondeu:", clienteCadastrado);
+      alert(`Cliente ${clienteCadastrado.nome} cadastrado com sucesso!`);
+
+      formulario.reset();
+    } else {
+      alert("O servidor recebeu os dados, mas houve um erro ao salvar.");
+    }
+  } catch (erro) {
+    console.error("Erro ao conectar na API:", erro);
+    alert(
+      "Não foi possível conectar ao Back-end. O Visual Studio está rodando?",
+    );
+  }
 });
